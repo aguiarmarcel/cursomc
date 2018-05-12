@@ -4,21 +4,21 @@ package com.marcel.cursomc.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.marcel.cursomc.domain.Cidade;
-import com.marcel.cursomc.repositories.CidadeRepository;
+import com.marcel.cursomc.domain.Cliente;
+import com.marcel.cursomc.repositories.ClienteRepository;
 import com.marcel.cursomc.services.exceptions.ObjectNotFoundException;
 
 @Service
-public class CidadesService {
+public class ClienteService {
 
 	@Autowired
-	private CidadeRepository repo;
+	private ClienteRepository repo;
 	
-	public Cidade buscar(Integer id) {
-		Cidade obj = repo.findOne(id);
+	public Cliente buscar(Integer id) {
+		Cliente obj = repo.findOne(id);
 		if (obj == null) {
 			throw new ObjectNotFoundException("Objeto não encontrado! Id:" + id 
-					+ ", tipo: " +Cidade.class.getName());
+					+ ", tipo: " +Cliente.class.getName());
 		}
 		return obj;
 	}

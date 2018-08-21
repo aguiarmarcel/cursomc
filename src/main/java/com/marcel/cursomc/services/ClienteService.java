@@ -3,6 +3,8 @@ package com.marcel.cursomc.services;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -16,7 +18,6 @@ import com.marcel.cursomc.domain.Endereco;
 import com.marcel.cursomc.domain.enums.TipoCliente;
 import com.marcel.cursomc.dto.ClienteDTO;
 import com.marcel.cursomc.dto.ClienteNewDTO;
-import com.marcel.cursomc.repositories.CidadeRepository;
 import com.marcel.cursomc.repositories.ClienteRepository;
 import com.marcel.cursomc.repositories.EnderecoRepository;
 import com.marcel.cursomc.services.exceptions.DataIntegrityException;
@@ -27,9 +28,6 @@ public class ClienteService {
 
 	@Autowired
 	private ClienteRepository repo;
-	
-	@Autowired
-	private CidadeRepository cidadeRepository;
 	
 	@Autowired
 	private EnderecoRepository enderecoRepository;
@@ -43,6 +41,7 @@ public class ClienteService {
 		return obj;
 	}
 	
+	@Transactional
 	public Cliente insert(Cliente obj) {
 		obj.setId(null);
 		obj = repo.save(obj);
@@ -80,7 +79,7 @@ public class ClienteService {
 	
 	public Cliente fromDTO(ClienteNewDTO objDto) {
 		Cliente cli = new Cliente(null, objDto.getName(), objDto.getEmail(), objDto.getCpfouCnpj(), TipoCliente.toEnum(objDto.getTipo()));
-		Cidade cid = cidadeRepository.findOne(objDto.getCidadeId());
+		Cidade cid = new Cidade(objDto.getCidadeId(), null, null);
 		Endereco end = new Endereco(null, objDto.getLogradouro(), objDto.getNumero(), objDto.getComplemento(), objDto.getBairro(), objDto.getCep(), cli, cid);
 		cli.getEnderecos().add(end);
 		cli.getTelefones().add(objDto.getTelefone1());

@@ -4,8 +4,12 @@ package com.marcel.cursomc.services;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
+import com.marcel.cursomc.domain.Cliente;
 import com.marcel.cursomc.domain.ItemPedido;
 import com.marcel.cursomc.domain.PagamentoComBoleto;
 import com.marcel.cursomc.domain.Pedido;
@@ -15,6 +19,8 @@ import com.marcel.cursomc.repositories.ItemPedidoRepository;
 import com.marcel.cursomc.repositories.PagamentoRepository;
 import com.marcel.cursomc.repositories.PedidoRepository;
 import com.marcel.cursomc.repositories.ProdutoRepository;
+import com.marcel.cursomc.security.UserSS;
+import com.marcel.cursomc.services.exceptions.AuthorizationException;
 import com.marcel.cursomc.services.exceptions.ObjectNotFoundException;
 
 @Service
@@ -74,4 +80,14 @@ public class PedidoService {
 		//System.out.println(obj);
 		return obj;
 	}
+	
+	public Page<Pedido> findPage(Integer page, Integer LinesPerPage, String orderBy, String direction){
+		UserSS user = UserService.authenticated();
+		if (user == null) {
+			throw new AuthorizationException("Acesso negado");
+		}
+		PageRequest pageRequest = new PageRequest(page, LinesPerPage, Direction.valueOf(direction), orderBy);
+		Cliente cliente = clienteRepository.findOne(user.getId());
+		return repo.findByCliente(cliente, pageRequest);
+	}	
 }
